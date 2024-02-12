@@ -24,3 +24,11 @@ export type Bot = {
 }
 
 export type Bots = Set<Bot>
+
+export type BotAction = {
+  gMain: number
+  gGreen: number
+  gBlue: number
+  gRed: number
+  selfDestroy: number
+}

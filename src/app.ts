@@ -1,3 +1,4 @@
+import { BOT_COUNT } from './model/const'
 import EvoGravityEngine from './model/evo-gravity-engine'
 import { Point } from './types'
 import WebView from './view/web-view'
@@ -9,7 +10,8 @@ const viewSize: Point = {
 
 export default function app() {
   const view = new WebView(viewSize)
-  const engine = new EvoGravityEngine(viewSize, 100)
+  const engine = new EvoGravityEngine(viewSize, BOT_COUNT)
+  engine.start()
 
   const draw = () => {
     view.draw(engine.bots)

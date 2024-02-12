@@ -1,4 +1,4 @@
-import { BOT_RADIUS } from '../model/const'
+import { BOT_RADIUS, MAX_ENERGY } from '../model/const'
 import { BotKind, Bots, Point } from '../types'
 import './app.css'
 import resetCanvas from './reset-canvas'
@@ -55,7 +55,11 @@ export default class WebView {
           2 * Math.PI,
           false,
         )
-        this.ctx!.fillStyle = `#${color}55`
+        let alpha = Math.floor((255 * bot.energy) / MAX_ENERGY).toString(16)
+        if (alpha.length === 1) {
+          alpha = '0' + alpha
+        }
+        this.ctx!.fillStyle = `#${color}${alpha}`
         this.ctx!.stroke()
         this.ctx!.fill()
         this.ctx!.closePath()

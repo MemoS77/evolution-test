@@ -1,14 +1,14 @@
 import { Bot, BotKind, Point } from '../types'
+import { MAX_ENERGY } from './const'
 import randomPlace from './random-place'
 
-const DEF_ENERGY = 1000
 let maxId = 0
 
 export function createRandomBot(fieldSize: Point): Bot {
   return {
     kind: Math.floor(Math.random() * 4),
     place: randomPlace(fieldSize, 50),
-    energy: DEF_ENERGY,
+    energy: Math.floor(MAX_ENERGY * Math.random()),
     vector: { x: 0, y: 0 },
     id: ++maxId,
     clan: 'asdasd',
