@@ -109,17 +109,19 @@ function applyRule(master: string, slave: string, strength: number) {
 }
 
 function workAtoms() {
-  applyRule('red', 'red', -15)
+  applyRule('red', 'red', -20)
   applyRule('red', 'green', -5)
-  applyRule('red', 'yellow', -5)
+  applyRule('red', 'yellow', -10)
 
   applyRule('green', 'red', -5)
   applyRule('green', 'green', -5)
   applyRule('green', 'yellow', 5)
 
-  applyRule('yellow', 'red', 5)
+  applyRule('yellow', 'red', 15)
   applyRule('yellow', 'green', -5)
-  applyRule('yellow', 'yellow', 1)
+  applyRule('yellow', 'yellow', 5)
+
+  applyRule('blue', 'yellow', -1)
 
   //calcGravity(allAtoms.get('red')!, allAtoms.get('red')!, 2)
   //calcGravity(allAtoms.get('red')!, allAtoms.get('green')!, -5)
