@@ -18,10 +18,12 @@ export default function applyGravity(bots: Bots) {
         const dy = atom1.place.y - atom2.place.y
         const d = Math.max(Math.sqrt(dx * dx + dy * dy), MIN_GRAVITY_DISTANCE)
 
-        if (d < MAX_GRAVITY_DISTANCE) {
+        if (d <= MAX_GRAVITY_DISTANCE) {
           if (d > BOT_RADIUS * 2) {
             // TODO calc g by DNA
-            const g = GRAVITY * (proccessDna(atom1, atom2) - 0.5)
+            const g =
+              GRAVITY *
+              (proccessDna(atom1, atom2, d / MAX_GRAVITY_DISTANCE) - 0.5)
             const F = g / d // With standart gravity function (d * d)  - model is not interesting
             const ax = (F * dx) / d
             const ay = (F * dy) / d

@@ -1,10 +1,11 @@
 import { NeuralNetwork } from 'brain.js'
+import { DNA } from '../../types'
 
-function randomNet() {
+export default function randomNet(): DNA {
   const config = {
     binaryThresh: 0.5,
     hiddenLayers: [
-      2 + Math.floor(Math.random() * 20),
+      3 + Math.floor(Math.random() * 20),
       2 + Math.floor(Math.random() * 10),
     ], // array of ints for the sizes of the hidden layers in the network
     activation: 'sigmoid', // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
@@ -17,7 +18,7 @@ function randomNet() {
 
   const trainData = []
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 3; i++) {
     trainData.push({
       input: [
         Math.random(),
@@ -36,6 +37,3 @@ function randomNet() {
   net.train(trainData)
   return net
 }
-
-const output = randomNet().run([0, 1, 0, 1, 0, 0, 0, 0]) // [0.987]
-console.log(output[0])

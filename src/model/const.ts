@@ -1,9 +1,9 @@
 export const GAME_SPEED = 1
 export const BOT_RADIUS = 8
-export const BOT_COUNT = 200
-export const GRAVITY = -3
+export const BOT_COUNT = 50
+export const GRAVITY = -4
 export const CORE_ANTIGRAVITY = 3
 export const MAX_GRAVITY_DISTANCE = 500
 export const CORE_DISTANCE_MULTIPLE = 1.7
 export const MIN_GRAVITY_DISTANCE = 1
-export const MAX_ENERGY = 100000
+export const MAX_ENERGY = 10000

@@ -1,3 +1,6 @@
+import { NeuralNetwork } from 'brain.js'
+import { INeuralNetworkData } from 'brain.js/dist/neural-network'
+
 export enum BotKind {
   // Стволовая клетка.
   Main,
@@ -11,7 +14,7 @@ export type Point = {
   y: number
 }
 
-type DNA = {}
+export type DNA = NeuralNetwork<INeuralNetworkData, INeuralNetworkData>
 
 export type Bot = {
   kind: BotKind
@@ -20,7 +23,7 @@ export type Bot = {
   vector: Point
   id: number
   clan: string
-  dna: DNA
+  dna: Array<Array<DNA>>
 }
 
 export type Bots = Set<Bot>
