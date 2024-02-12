@@ -16,14 +16,14 @@ type AtomMap = Map<string, Atom[]>
 
 const FIELD_PADDING = 10
 const ATOM_DISPLAY_SIZE = 4
-const DEF_MASS = 5
-const FRICTION = 0.1
-// For optimization gravity calculations
-const MAX_GRAVITY_DISTANCE = 2000
+const DEF_MASS = 1
+const FRICTION = 0.2
+const MAX_GRAVITY_DISTANCE = 200
+
 const allAtoms: AtomMap = new Map()
 const viewSize: Point = {
-  x: window.innerWidth - 20,
-  y: window.innerHeight - 20,
+  x: Math.min(window.innerWidth - 20, 1200),
+  y: Math.min(window.innerHeight - 20, 700),
 }
 
 export default function app() {
@@ -34,8 +34,8 @@ export default function app() {
     if (ctx) {
       createAtoms('red', 100)
       createAtoms('green', 100)
-
-      //createAtoms('yellow', 100)
+      createAtoms('blue', 100)
+      createAtoms('yellow', 500)
 
       const draw = () => {
         workAtoms()
@@ -49,24 +49,22 @@ export default function app() {
   }
 }
 
-function calcGravity(atoms1: Atom[], atoms2: Atom[], g: number) {
-  const glueDistance = 4
-  const collisionDistance = 8
+function calcGravity(atomsMaster: Atom[], atomsSlave: Atom[], g: number) {
+  //const glueDistance = 2
+  const collisionDistance = 3
   // Gravity
-  atoms1.forEach((atom1) => {
-    atoms2.forEach((atom2) => {
+  atomsSlave.forEach((atom1) => {
+    atomsMaster.forEach((atom2) => {
       const dx = atom1.place.x - atom2.place.x
       const dy = atom1.place.y - atom2.place.y
       const d = Math.sqrt(dx * dx + dy * dy)
       if (d > collisionDistance && d < MAX_GRAVITY_DISTANCE) {
-        const F = (g * atom1.mass * atom2.mass) / (d * d)
+        const F = (g * atom1.mass * atom2.mass) / d // With standart gravity function (d * d)  - model is not interesting
         const ax = (F * dx) / d
         const ay = (F * dy) / d
-        atom1.vector.x -= ax
-        atom1.vector.y -= ay
-        atom2.vector.x += ax
-        atom2.vector.y += ay
-      } else if (d <= glueDistance) {
+        atom1.vector.x += ax
+        atom1.vector.y += ay
+      } else if (d <= collisionDistance) {
         // Collision. Calc common vector (with mass) and set to both atoms
         const newVX =
           (atom1.vector.x * atom1.mass + atom2.vector.x * atom2.mass) /
@@ -75,10 +73,6 @@ function calcGravity(atoms1: Atom[], atoms2: Atom[], g: number) {
           (atom1.vector.y * atom1.mass + atom2.vector.y * atom2.mass) /
           (atom1.mass + atom2.mass)
         atom1.vector = {
-          x: newVX,
-          y: newVY,
-        }
-        atom2.vector = {
           x: newVX,
           y: newVY,
         }
@@ -91,16 +85,48 @@ function setNewPlaces(atoms: Atom[], borders: Point) {
   atoms.forEach((atom) => {
     atom.place.x += atom.vector.x
     atom.place.y += atom.vector.y
-    // change vector when< 0 or > border
-    if (atom.place.x < 0 || atom.place.x > borders.x)
+
+    if (atom.place.x < 0) {
+      atom.place.x = 1
       atom.vector.x = -atom.vector.x
-    if (atom.place.y < 0 || atom.place.y > borders.y)
+    } else if (atom.place.x > borders.x) {
+      atom.place.x = borders.x - 1
+      atom.vector.x = -atom.vector.x
+    }
+
+    if (atom.place.y < 0) {
+      atom.place.y = 1
       atom.vector.y = -atom.vector.y
+    } else if (atom.place.y > borders.y) {
+      atom.place.y = borders.y - 1
+      atom.vector.y = -atom.vector.y
+    }
   })
 }
 
+function applyRule(master: string, slave: string, strength: number) {
+  calcGravity(allAtoms.get(master)!, allAtoms.get(slave)!, strength)
+}
+
 function workAtoms() {
-  calcGravity(allAtoms.get('red')!, allAtoms.get('red')!, 3)
+  applyRule('red', 'red', -15)
+  applyRule('red', 'green', -5)
+  applyRule('red', 'yellow', -5)
+
+  applyRule('green', 'red', -5)
+  applyRule('green', 'green', -5)
+  applyRule('green', 'yellow', 5)
+
+  applyRule('yellow', 'red', 5)
+  applyRule('yellow', 'green', -5)
+  applyRule('yellow', 'yellow', 1)
+
+  //calcGravity(allAtoms.get('red')!, allAtoms.get('red')!, 2)
+  //calcGravity(allAtoms.get('red')!, allAtoms.get('green')!, -5)
+  //calcGravity(allAtoms.get('green')!, allAtoms.get('red')!, 3)
+  //calcGravity(allAtoms.get('yellow')!, allAtoms.get('red')!, -1)
+  //calcGravity(allAtoms.get('blue')!, allAtoms.get('red')!, 2)
+
   allAtoms.forEach((atoms) => {
     applyFriction(atoms, FRICTION)
     setNewPlaces(atoms, viewSize)
