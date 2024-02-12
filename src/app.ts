@@ -1,24 +1,12 @@
-import './app.css'
-import resetCanvas from './view/reset-canvas'
-
-type Point = {
-  x: number
-  y: number
-}
-
-type Atom = {
-  place: Point
-  mass: number
-  vector: Point
-}
-
-type AtomMap = Map<string, Atom[]>
+import { Atom, AtomMap, Point } from './types'
+import View from './view/view'
 
 const FIELD_PADDING = 10
-const ATOM_DISPLAY_SIZE = 4
+
 const DEF_MASS = 1
 const FRICTION = 0.2
 const MAX_GRAVITY_DISTANCE = 200
+const stepTimeout = 10
 
 const allAtoms: AtomMap = new Map()
 const viewSize: Point = {
@@ -27,26 +15,23 @@ const viewSize: Point = {
 }
 
 export default function app() {
-  if (resetCanvas(viewSize.x, viewSize.y)) {
-    const ctx = document
-      .querySelector<HTMLCanvasElement>('canvas')
-      ?.getContext('2d')
-    if (ctx) {
-      createAtoms('red', 100)
-      createAtoms('green', 100)
-      createAtoms('blue', 100)
-      createAtoms('yellow', 500)
+  createAtoms('red', 100)
+  createAtoms('green', 100)
+  createAtoms('blue', 100)
+  createAtoms('yellow', 500)
 
-      const draw = () => {
-        workAtoms()
-        drawAtoms(ctx, viewSize.x, viewSize.y, allAtoms)
-        requestAnimationFrame(draw)
-      }
-      draw()
-    }
-  } else {
-    alert('No root element found')
+  const view = new View(viewSize)
+
+  setInterval(() => {
+    workAtoms(allAtoms)
+  }, stepTimeout)
+
+  const draw = () => {
+    view.draw(allAtoms)
+    requestAnimationFrame(() => draw())
   }
+
+  draw()
 }
 
 function calcGravity(atomsMaster: Atom[], atomsSlave: Atom[], g: number) {
@@ -108,7 +93,7 @@ function applyRule(master: string, slave: string, strength: number) {
   calcGravity(allAtoms.get(master)!, allAtoms.get(slave)!, strength)
 }
 
-function workAtoms() {
+function workAtoms(allAtoms: AtomMap) {
   applyRule('red', 'red', -20)
   applyRule('red', 'green', -5)
   applyRule('red', 'yellow', -10)
@@ -169,24 +154,4 @@ function randomPlace(padding: number): Point {
     x: Math.random() * (viewSize.x - padding * 2) + padding,
     y: Math.random() * (viewSize.y - padding * 2) + padding,
   }
-}
-
-function drawAtoms(
-  ctx: CanvasRenderingContext2D,
-  sx: number,
-  sy: number,
-  atoms: AtomMap,
-) {
-  ctx.clearRect(0, 0, sx, sy)
-  atoms.forEach((atoms, color) => {
-    ctx.fillStyle = color
-    atoms.forEach((atom) => {
-      ctx.fillRect(
-        atom.place.x,
-        atom.place.y,
-        ATOM_DISPLAY_SIZE,
-        ATOM_DISPLAY_SIZE,
-      )
-    })
-  })
 }
