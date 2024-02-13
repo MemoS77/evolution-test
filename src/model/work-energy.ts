@@ -32,33 +32,17 @@ export default function workEnergy(bots: Bots) {
         newBot.kind = proccessDna(bot)
         bots.add(newBot)
       }
-      bot.energy -= LOOP_ENERGY
-    }
-
-    if (bot.energy < LOOP_ENERGY) {
-      bots.delete(bot)
     }
   })
-
-  // Синие
-  /*
-  bots.forEach((bot) => {
-    if (bot.kind === BotKind.Blue) {
-      //bot.energy -= LOOP_ENERGY
-    }
-  })*/
 
   // Красные
   bots.forEach((bot) => {
     if (bot.kind === BotKind.Red) {
       bot.loopCalculated!.connectedBots.forEach((b) => {
         if (b) {
-          if (
-            (b.kind === BotKind.Red || b.kind === BotKind.Blue) &&
-            b.clan !== bot.clan
-          ) {
+          if (b.kind === BotKind.Red && b.clan !== bot.clan) {
             b.energy -= TRANSFER_ENERGY
-            if (b.kind === BotKind.Red) bot.energy -= TRANSFER_ENERGY
+            bot.energy -= TRANSFER_ENERGY
           }
         }
       })
@@ -67,7 +51,6 @@ export default function workEnergy(bots: Bots) {
         newBot.kind = proccessDna(bot)
         bots.add(newBot)
       }
-      bot.energy -= LOOP_ENERGY
     }
   })
 
@@ -103,14 +86,12 @@ export default function workEnergy(bots: Bots) {
         }
         bots.add(newBot)
       }
-      if (bot.loopCalculated!.neighbours > 0) {
-        bot.energy -= LOOP_ENERGY
-      }
     }
   })
 
   // Все
   bots.forEach((bot) => {
+    bot.energy -= LOOP_ENERGY
     if (bot.energy < LOOP_ENERGY) {
       bots.delete(bot)
     } else if (bot.energy > MAX_ENERGY) {

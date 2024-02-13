@@ -29,7 +29,7 @@ export default function applyEngine(bots: Bots) {
           const d = Math.max(Math.sqrt(dx * dx + dy * dy), MIN_GRAVITY_DISTANCE)
           if (i === 0) {
             // На первом круге вычислем соседей клетки, свободное место
-            if (d <= BOT_RADIUS * 2) {
+            if (d <= BOT_RADIUS * 3) {
               atom1.loopCalculated!.neighbours++
               atom1.loopCalculated!.connectedBots.push(atom2)
             }
