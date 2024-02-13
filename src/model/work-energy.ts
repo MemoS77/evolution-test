@@ -8,7 +8,7 @@ import {
   RED_DEVIDE_ENERGY,
 } from './const'
 import { devideBot, glueBots } from './gen-bot'
-import { proccessTransformDna } from './proccess-dna'
+import { proccessDna } from './proccess-dna'
 
 export default function workEnergy(bots: Bots) {
   // Нужно считать по отдельности, иначе некоторые взаимодействия сильно будут зависеть от порядка обработки
@@ -20,7 +20,7 @@ export default function workEnergy(bots: Bots) {
       bot.loopCalculated!.connectedBots.forEach((b) => {
         if (
           (b.kind === BotKind.Red ||
-            (b.kind === BotKind.Main && b.clan === bot.clan)) &&
+            (b.kind === BotKind.White && b.clan === bot.clan)) &&
           bot.energy > TRANSFER_ENERGY
         ) {
           b.energy += TRANSFER_ENERGY
@@ -29,7 +29,7 @@ export default function workEnergy(bots: Bots) {
       })
       if (bot.energy >= MAX_ENERGY) {
         const newBot = devideBot(bot)
-        newBot.kind = BotKind.Main
+        newBot.kind = proccessDna(bot)
         bots.add(newBot)
       }
       bot.energy -= LOOP_ENERGY
@@ -64,7 +64,7 @@ export default function workEnergy(bots: Bots) {
       })
       if (bot.energy >= RED_DEVIDE_ENERGY) {
         const newBot = devideBot(bot)
-        newBot.kind = BotKind.Main
+        newBot.kind = proccessDna(bot)
         bots.add(newBot)
       }
       bot.energy -= LOOP_ENERGY
@@ -73,10 +73,10 @@ export default function workEnergy(bots: Bots) {
 
   // Белые
   bots.forEach((bot) => {
-    if (bot.kind === BotKind.Main) {
+    if (bot.kind === BotKind.White) {
       bot.loopCalculated!.connectedBots.forEach((b) => {
         if (
-          b.kind === BotKind.Main &&
+          b.kind === BotKind.White &&
           b.clan !== bot.clan &&
           bot.energy > LOOP_ENERGY &&
           b.energy > LOOP_ENERGY
@@ -84,7 +84,7 @@ export default function workEnergy(bots: Bots) {
           glueBots(bot, b)
         } else if (
           ((b.kind === BotKind.Red && b.clan !== bot.clan) ||
-            ((b.kind === BotKind.Main ||
+            ((b.kind === BotKind.White ||
               b.kind === BotKind.Red ||
               b.kind === BotKind.Green) &&
               b.clan === bot.clan &&
@@ -97,8 +97,8 @@ export default function workEnergy(bots: Bots) {
       })
       if (bot.energy >= WHITE_DEVIDE_ENERGY) {
         const newBot = devideBot(bot)
-        const r = proccessTransformDna(bot)
-        if (r !== BotKind.Main) {
+        const r = proccessDna(bot)
+        if (r !== BotKind.White) {
           newBot.kind = r
         }
         bots.add(newBot)

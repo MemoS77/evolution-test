@@ -3,9 +3,17 @@ import { BotKind, Bots, Point } from '../types'
 import './app.css'
 import resetCanvas from './reset-canvas'
 
+enum EViewMode {
+  Colors,
+  Clans,
+  Mixed,
+}
+
 export default class WebView {
   private ctx: CanvasRenderingContext2D | null = null
   private canDraw: boolean = false
+  private viewMode: EViewMode = EViewMode.Colors
+
   constructor(private viewSize: Point) {
     if (resetCanvas(viewSize.x, viewSize.y)) {
       this.ctx = document
@@ -27,26 +35,30 @@ export default class WebView {
       bots.forEach((bot) => {
         let color = 'FFFFFF'
 
-        switch (bot.kind) {
-          case BotKind.Blue:
-            color = '0000FF'
-            break
-          case BotKind.Green:
-            color = '00FF00'
-            break
-          case BotKind.Red:
-            color = 'FF0000'
-            break
-          case BotKind.Main:
-            color = 'FFFFFF'
-            break
-          default:
-            break
-        }
+        if (this.viewMode !== EViewMode.Clans) {
+          switch (bot.kind) {
+            case BotKind.Blue:
+              color = '0000FF'
+              break
+            case BotKind.Green:
+              color = '00FF00'
+              break
+            case BotKind.Red:
+              color = 'FF0000'
+              break
+            case BotKind.White:
+              color = 'FFFFFF'
+              break
+            default:
+              break
+          }
+        } else color = bot.clan
 
         // Окружность цвета 1 заполненная цветом 2
         this.ctx!.beginPath()
-        this.ctx!.strokeStyle = `#${color}`
+
+        this.ctx!.strokeStyle =
+          this.viewMode === EViewMode.Colors ? `#${color}` : `#${bot.clan}`
         this.ctx!.arc(
           bot.place.x,
           bot.place.y,

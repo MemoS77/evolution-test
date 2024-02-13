@@ -1,42 +1,38 @@
-import { Bot, BotKind, Bots, DNA, Point } from '../types'
+import { Bot, BotKind, DNA, Point } from '../types'
 import { BOT_RADIUS, MAX_ENERGY } from './const'
 import randomNet from './neuro/random-net'
-import randomTransformNet from './neuro/random-transform-net'
+
 import randomPlace from './random-place'
 import { copyDna } from './neuro/mutation'
+import { generateRandomColor } from './funcs'
 
 let maxId = 0
 
 function genDna() {
   const dna: Array<DNA> = []
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 3; i++) {
     const n = randomNet()
     dna.push(n)
   }
   return dna
 }
 
-export function randomClan(): string {
-  return Math.floor(Math.random() * 1000000 * 1000000).toString(36)
-}
-
 export function createRandomBot(fieldSize: Point): Bot {
-  const kind = Math.floor(Math.random() * 4)
+  const kind: BotKind = BotKind.Green //Math.floor(Math.random() * 4)
   return {
     kind,
     place: randomPlace(fieldSize, 50),
     energy: Math.floor((MAX_ENERGY / 2) * Math.random() + MAX_ENERGY / 4),
     vector: { x: 0, y: 0 },
     id: ++maxId,
-    clan: randomClan(),
+    clan: generateRandomColor(),
     dna: kind === BotKind.Blue ? null : genDna(),
-    transformDna: kind === BotKind.Blue ? null : randomTransformNet(),
     devideCounter: 1,
   }
 }
 
 export function devideBot(parentBot: Bot): Bot {
-  if (!parentBot.dna || !parentBot.transformDna) return parentBot
+  if (!parentBot.dna) return parentBot
   parentBot.energy = parentBot.energy / 2
   const newBot = { ...parentBot }
   newBot.id = ++maxId
@@ -63,9 +59,6 @@ export function devideBot(parentBot: Bot): Bot {
   newBot.place.x += nx
   newBot.place.y += ny
 
-  // Копия ДНК
-  newBot.transformDna = copyDna(newBot.transformDna!)
-
   // Копия всех основных ДНК
   for (let i = 0; i < newBot.dna!.length; i++) {
     newBot.dna![i] = copyDna(newBot.dna![i])
@@ -80,19 +73,12 @@ function randomInt(min: number, max: number) {
 }
 
 export function glueBots(bot1: Bot, bot2: Bot) {
-  const m = randomInt(0, 3)
+  const m = randomInt(0, 2)
   bot1.dna![m] = copyDna(bot2.dna![m])
-  const n = randomInt(0, 3)
-  if (n !== m) {
-    bot1.dna![n] = copyDna(bot2.dna![n])
-  }
-
-  if (bot2.energy > bot1.energy) {
-    bot1.transformDna = copyDna(bot2.transformDna!)
-  }
+  const n = randomInt(0, 2)
+  if (n !== m) bot1.dna![n] = copyDna(bot2.dna![n])
   bot1.energy += bot2.energy
-  bot1.clan = randomClan()
-  //bots.delete(bot2)
+  bot1.clan = generateRandomColor()
   bot2.energy = 0
   //console.log('Glue!!')
 }

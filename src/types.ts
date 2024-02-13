@@ -3,10 +3,10 @@ import { INeuralNetworkData } from 'brain.js/dist/neural-network'
 
 export enum BotKind {
   // Стволовая клетка.
-  Main,
+  White,
   Green,
-  Blue,
   Red,
+  Blue,
 }
 
 export type Point = {
@@ -25,7 +25,6 @@ export type Bot = {
   clan: string
   devideCounter: number
   dna: Array<DNA> | null
-  transformDna: DNA | null
   // Данные вычислемые в каждом цикле. Для оптимизации вычислений, храним в боте.
   loopCalculated?: {
     neighbours: number
@@ -35,11 +34,3 @@ export type Bot = {
 }
 
 export type Bots = Set<Bot>
-
-export type BotAction = {
-  gMain: number
-  gGreen: number
-  gBlue: number
-  gRed: number
-  selfDestroy: number
-}

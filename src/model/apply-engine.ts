@@ -8,7 +8,7 @@ import {
   MAX_GRAVITY_DISTANCE,
   MIN_GRAVITY_DISTANCE,
 } from './const'
-import { proccessDna } from './proccess-dna'
+import { proccessRules } from './proccess-dna'
 
 export default function applyEngine(bots: Bots) {
   // Gravity
@@ -59,14 +59,14 @@ export default function applyEngine(bots: Bots) {
                 }
                 const g =
                   GRAVITY *
-                  (proccessDna(atom1, atom2, d / MAX_GRAVITY_DISTANCE) - 0.5)
+                  (proccessRules(atom1, atom2, d / MAX_GRAVITY_DISTANCE) - 0.5)
                 const F = g / d // With standart gravity function (d * d)  - model is not interesting
                 const fx = (F * dx) / d
                 const fy = (F * dy) / d
                 atom1.vector.x += fx
                 atom1.vector.y += fy
-                atom2.vector.x -= fx
-                atom2.vector.y -= fy
+                //atom2.vector.x -= fx
+                //atom2.vector.y -= fy
               } else {
                 // Ссила отталкивания при очень близком сближении ядер
                 const fx = (dx * CORE_ANTIGRAVITY) / (d * d)
