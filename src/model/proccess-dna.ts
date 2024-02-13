@@ -14,6 +14,10 @@ type DnaInputs = {
 }*/
 
 export function proccessDna(mainBot: Bot, compareBot: Bot, d: number) {
+  if (mainBot.kind === BotKind.Blue) {
+    return 0.5
+  }
+
   const neurons = [
     mainBot.energy / MAX_ENERGY,
     1 / mainBot.devideCounter,
@@ -28,7 +32,7 @@ export function proccessDna(mainBot: Bot, compareBot: Bot, d: number) {
     mainBot.loopCalculated!.emptySpace,
     Math.random(),
   ]
-  const res = mainBot.dna[mainBot.kind].run(neurons)
+  const res = mainBot.dna![mainBot.kind].run(neurons)
   const ans = res ? ((res as Array<number>)[0]! as number) : 0
   //console.log(ans, mainBot.loopCalculated!, d)
   return ans
@@ -58,7 +62,7 @@ export function proccessTransformDna(bot: Bot): number {
     enemy[3],
   ]
 
-  const res = bot.transformDna.run(neurons) as Array<number>
+  const res = bot.transformDna!.run(neurons) as Array<number>
   // Нужно найти из 4 элементво массива максимальный и вернуть его индекс
   if (res && res.length === 4) {
     const mx = Math.max(...res)

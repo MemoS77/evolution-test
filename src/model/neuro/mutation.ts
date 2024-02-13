@@ -9,6 +9,7 @@ export function copyDna(net: DNA) {
     layer.biases.forEach((b, id) => {
       if (Math.random() < mutationRate) {
         layer.biases[id] = Math.random() - 0.5
+        //console.log('mutation')
         //console.log('old', layer.biases[id], 'new', layer.biases[id])
       }
     })

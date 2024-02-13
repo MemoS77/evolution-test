@@ -3,8 +3,9 @@ import {
   LOOP_ENERGY,
   MAX_ENERGY,
   MAX_GREEN_ENERGY,
-  STEM_DEVIDE_ENERGY,
+  WHITE_DEVIDE_ENERGY,
   TRANSFER_ENERGY,
+  RED_DEVIDE_ENERGY,
 } from './const'
 import { devideBot, glueBots } from './gen-bot'
 import { proccessTransformDna } from './proccess-dna'
@@ -18,7 +19,8 @@ export default function workEnergy(bots: Bots) {
       bot.energy += MAX_GREEN_ENERGY * bot.loopCalculated!.emptySpace
       bot.loopCalculated!.connectedBots.forEach((b) => {
         if (
-          (b.kind === BotKind.Red || b.kind === BotKind.Blue) &&
+          (b.kind === BotKind.Red ||
+            (b.kind === BotKind.Main && b.clan === bot.clan)) &&
           bot.energy > TRANSFER_ENERGY
         ) {
           b.energy += TRANSFER_ENERGY
@@ -26,8 +28,9 @@ export default function workEnergy(bots: Bots) {
         }
       })
       if (bot.energy >= MAX_ENERGY) {
-        bots.add(devideBot(bot))
-        bot.kind = BotKind.Blue
+        const newBot = devideBot(bot)
+        newBot.kind = BotKind.Main
+        bots.add(newBot)
       }
       bot.energy -= LOOP_ENERGY
     }
@@ -38,70 +41,70 @@ export default function workEnergy(bots: Bots) {
   })
 
   // Синие
+  /*
   bots.forEach((bot) => {
     if (bot.kind === BotKind.Blue) {
-      bot.loopCalculated!.connectedBots.forEach((b) => {
-        if (
-          (b.kind === BotKind.Red && b.clan !== bot.clan) ||
-          (b.clan === bot.clan && bot.energy - TRANSFER_ENERGY > b.energy)
-        ) {
-          b.energy += TRANSFER_ENERGY
-          bot.energy -= TRANSFER_ENERGY
-        }
-      })
-      if (bot.energy >= MAX_ENERGY) {
-        const newBot = devideBot(bot)
-        bots.add(newBot)
-        newBot.kind = BotKind.Main
-      }
-      bot.energy -= LOOP_ENERGY
+      //bot.energy -= LOOP_ENERGY
     }
-  })
+  })*/
 
   // Красные
   bots.forEach((bot) => {
     if (bot.kind === BotKind.Red) {
       bot.loopCalculated!.connectedBots.forEach((b) => {
-        if (b.kind === BotKind.Red && b.clan !== bot.clan) {
-          b.energy -= TRANSFER_ENERGY
-          bot.energy -= TRANSFER_ENERGY
+        if (b) {
+          if (
+            (b.kind === BotKind.Red || b.kind === BotKind.Blue) &&
+            b.clan !== bot.clan
+          ) {
+            b.energy -= TRANSFER_ENERGY
+            if (b.kind === BotKind.Red) bot.energy -= TRANSFER_ENERGY
+          }
         }
       })
-      if (bot.energy >= MAX_ENERGY) {
-        bots.add(devideBot(bot))
-        bot.kind = BotKind.Blue
+      if (bot.energy >= RED_DEVIDE_ENERGY) {
+        const newBot = devideBot(bot)
+        newBot.kind = BotKind.Main
+        bots.add(newBot)
       }
       bot.energy -= LOOP_ENERGY
     }
   })
 
-  // Семечки
+  // Белые
   bots.forEach((bot) => {
-    if (bot) {
-      if (bot.kind === BotKind.Main) {
-        bot.loopCalculated!.connectedBots.forEach((b) => {
-          if (b) {
-            if (b.kind === BotKind.Main && b.clan !== bot.clan) {
-              glueBots(bot, b, bots)
-              return
-            } else if (b.kind === BotKind.Red && b.clan !== bot.clan) {
-              b.energy += TRANSFER_ENERGY
-              bot.energy -= TRANSFER_ENERGY
-            }
-          }
-        })
-        if (bot.energy >= STEM_DEVIDE_ENERGY) {
-          const newBot = devideBot(bot)
-          const r = proccessTransformDna(bot)
-          if (r !== BotKind.Main) {
-            newBot.kind = r
-            console.log('Transform!', r)
-          } else console.log('Devide')
-          bots.add(newBot)
+    if (bot.kind === BotKind.Main) {
+      bot.loopCalculated!.connectedBots.forEach((b) => {
+        if (
+          b.kind === BotKind.Main &&
+          b.clan !== bot.clan &&
+          bot.energy > LOOP_ENERGY &&
+          b.energy > LOOP_ENERGY
+        ) {
+          glueBots(bot, b)
+        } else if (
+          ((b.kind === BotKind.Red && b.clan !== bot.clan) ||
+            ((b.kind === BotKind.Main ||
+              b.kind === BotKind.Red ||
+              b.kind === BotKind.Green) &&
+              b.clan === bot.clan &&
+              bot.energy - TRANSFER_ENERGY * 2 > b.energy)) &&
+          bot.energy > TRANSFER_ENERGY
+        ) {
+          b.energy += TRANSFER_ENERGY
+          bot.energy -= TRANSFER_ENERGY
         }
-        if (bot.loopCalculated!.neighbours > 0) {
-          bot.energy -= LOOP_ENERGY
+      })
+      if (bot.energy >= WHITE_DEVIDE_ENERGY) {
+        const newBot = devideBot(bot)
+        const r = proccessTransformDna(bot)
+        if (r !== BotKind.Main) {
+          newBot.kind = r
         }
+        bots.add(newBot)
+      }
+      if (bot.loopCalculated!.neighbours > 0) {
+        bot.energy -= LOOP_ENERGY
       }
     }
   })
