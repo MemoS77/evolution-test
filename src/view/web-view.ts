@@ -56,9 +56,11 @@ export default class WebView {
           false,
         )
         let alpha = Math.floor((255 * bot.energy) / MAX_ENERGY).toString(16)
+
         if (alpha.length === 1) {
           alpha = '0' + alpha
         }
+
         this.ctx!.fillStyle = `#${color}${alpha}`
         this.ctx!.stroke()
         this.ctx!.fill()

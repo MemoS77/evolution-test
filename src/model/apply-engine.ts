@@ -29,32 +29,31 @@ export default function applyEngine(bots: Bots) {
   // Gravity
   bots.forEach((atom1) => {
     // Сколько вокруг клетки - других. Два прохода для избежания лишних расчетов
-    const distances = new Map<Bot, number[]>()
-    let nearCount = 0
 
-    for (let i = 0; i <= 2; i++) {
+    atom1.loopCalculated = {
+      neighbours: 0,
+      emptySpace: 0,
+    }
+
+    for (let i = 0; i <= 1; i++) {
       bots.forEach((atom2) => {
         if (atom2 !== atom1) {
+          const dx = atom1.place.x - atom2.place.x
+          const dy = atom1.place.y - atom2.place.y
+          const d = Math.max(Math.sqrt(dx * dx + dy * dy), MIN_GRAVITY_DISTANCE)
           if (i === 0) {
             // На первом круге вычислем соседей клетки, свободное место
-            const dx = atom1.place.x - atom2.place.x
-            const dy = atom1.place.y - atom2.place.y
-            const d = Math.max(
-              Math.sqrt(dx * dx + dy * dy),
-              MIN_GRAVITY_DISTANCE,
-            )
-            distances.set(atom2, [d, dx, dy])
             if (d <= BOT_RADIUS * 2) {
-              nearCount++
+              atom1.loopCalculated!.neighbours++
             }
-          } else if (i === 2) {
-            // На третьем применяем действия движка
           } else {
             // втором вычисляем новые ускорения по днк
-            const [d, dx, dy] = distances.get(atom2)!
 
             // Количество света. При 5 соседях - очень мало. При 6 - 0.
-            const lightCount = Math.max(1 - EMTY_SPACE_DECREASE * nearCount, 0)
+            atom1.loopCalculated!.emptySpace = Math.max(
+              1 - EMTY_SPACE_DECREASE * atom1.loopCalculated!.neighbours,
+              0,
+            )
 
             if (d <= MAX_GRAVITY_DISTANCE) {
               if (d > BOT_RADIUS * CORE_DISTANCE_MULTIPLE) {
@@ -73,22 +72,22 @@ export default function applyEngine(bots: Bots) {
                 }
                 const g =
                   GRAVITY *
-                  (proccessDna(
-                    atom1,
-                    atom2,
-                    d / MAX_GRAVITY_DISTANCE,
-                    lightCount,
-                  ) -
-                    0.5)
+                  (proccessDna(atom1, atom2, d / MAX_GRAVITY_DISTANCE) - 0.5)
                 const F = g / d // With standart gravity function (d * d)  - model is not interesting
-                const ax = (F * dx) / d
-                const ay = (F * dy) / d
-                atom2.vector.x -= ax
-                atom2.vector.y -= ay
+                const fx = (F * dx) / d
+                const fy = (F * dy) / d
+                atom1.vector.x += fx
+                atom1.vector.y += fy
+                atom2.vector.x -= fx
+                atom2.vector.y -= fy
               } else {
                 // Ссила отталкивания при очень близком сближении ядер
-                atom2.vector.x -= (dx * CORE_ANTIGRAVITY) / (d * d)
-                atom2.vector.y -= (dy * CORE_ANTIGRAVITY) / (d * d)
+                const fx = (dx * CORE_ANTIGRAVITY) / (d * d)
+                const fy = (dy * CORE_ANTIGRAVITY) / (d * d)
+                atom1.vector.x += fx
+                atom1.vector.y += fy
+                atom2.vector.x -= fx
+                atom2.vector.y -= fy
               }
             }
           }

@@ -18,10 +18,10 @@ export function createRandomBot(fieldSize: Point): Bot {
   return {
     kind: Math.floor(Math.random() * 4),
     place: randomPlace(fieldSize, 50),
-    energy: Math.floor(MAX_ENERGY * Math.random()),
+    energy: Math.floor((MAX_ENERGY / 2) * Math.random() + MAX_ENERGY / 4),
     vector: { x: 0, y: 0 },
     id: ++maxId,
-    clan: Math.floor(Math.random() * 100000 * 100000).toString(36),
+    clan: Math.floor(Math.random() * 1000000 * 1000000).toString(36),
     dna: genDna(),
     devideCounter: 1,
   }

@@ -12,12 +12,7 @@ type DnaInputs = {
   random: number
 }
 
-export default function proccessDna(
-  mainBot: Bot,
-  compareBot: Bot,
-  d: number,
-  lightCount: number,
-) {
+export default function proccessDna(mainBot: Bot, compareBot: Bot, d: number) {
   const neurons = [
     mainBot.energy / MAX_ENERGY,
     1 / mainBot.devideCounter,
@@ -29,12 +24,14 @@ export default function proccessDna(
     compareBot.kind === BotKind.Green ? 1 : 0,
     compareBot.kind === BotKind.Red ? 1 : 0,
     d,
-    lightCount,
+    mainBot.loopCalculated!.emptySpace,
     Math.random(),
   ]
-  //const res = mainBot.dna[mainBot.kind].run(neurons)
-  //const ans = res ? ((res as Array<number>)[0]! as number) : 0
-  //return ans
+  const res = mainBot.dna[mainBot.kind].run(neurons)
+  const ans = res ? ((res as Array<number>)[0]! as number) : 0
+  //console.log(ans, mainBot.loopCalculated!, d)
+  return 1
+  return ans
 
-  return compareBot.kind === mainBot.kind ? 1 : 0
+  //return compareBot.kind === mainBot.kind ? 1 : 0
 }
