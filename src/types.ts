@@ -23,7 +23,13 @@ export type Bot = {
   vector: Point
   id: number
   clan: string
-  dna: Array<Array<DNA>>
+  devideCounter: number
+  dna: Array<DNA>
+  // Данные вычислемые в каждом цикле. Для оптимизации вычислений, храним в боте.
+  loopCalculated?: {
+    neighbours: number
+    emptySpace: number // на основе neighbours
+  }
 }
 
 export type Bots = Set<Bot>

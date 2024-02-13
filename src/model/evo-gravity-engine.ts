@@ -1,5 +1,5 @@
 import { Bots, Point } from '../types'
-import applyGravity from './apply-gravity'
+import applyEngine from './apply-engine'
 import { GAME_SPEED } from './const'
 import decEnergy from './dec-energy'
 import { createRandomBot } from './gen-bot'
@@ -23,7 +23,7 @@ export default class EvoGravityEngine {
   }
 
   private loop() {
-    applyGravity(this.bots)
+    applyEngine(this.bots)
     setNewPlaces(this.bots, this.fieldSize)
     decEnergy(this.bots)
   }

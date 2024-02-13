@@ -6,13 +6,10 @@ import randomPlace from './random-place'
 let maxId = 0
 
 function genDna() {
-  const dna: Array<Array<DNA>> = []
+  const dna: Array<DNA> = []
   for (let i = 0; i < 4; i++) {
-    dna[i] = []
-    for (let j = 0; j < 4; j++) {
-      const n = randomNet()
-      dna[i].push(n)
-    }
+    const n = randomNet()
+    dna.push(n)
   }
   return dna
 }
@@ -26,6 +23,7 @@ export function createRandomBot(fieldSize: Point): Bot {
     id: ++maxId,
     clan: Math.floor(Math.random() * 100000 * 100000).toString(36),
     dna: genDna(),
+    devideCounter: 1,
   }
 }
 

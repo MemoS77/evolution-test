@@ -18,9 +18,13 @@ export default function randomNet(): DNA {
 
   const trainData = []
 
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 5; i++) {
     trainData.push({
       input: [
+        Math.random(),
+        Math.random(),
+        Math.random(),
+        Math.random(),
         Math.random(),
         Math.random(),
         Math.random(),
