@@ -1,4 +1,4 @@
-import { Bot, Bots } from '../types'
+import { Bots } from '../types'
 import {
   BOT_RADIUS,
   CORE_ANTIGRAVITY,
@@ -8,22 +8,7 @@ import {
   MAX_GRAVITY_DISTANCE,
   MIN_GRAVITY_DISTANCE,
 } from './const'
-import proccessDna from './proccess-dna'
-
-/*
-function calcFreeSpace(bots: Bots, bot: Bot, d: number) {
-  let freeSpace = 1
-  let d = 0.15
-  // 1 - непсоредственно вокруг клетки все пространстов свободно 0-клетка окружена с 6 сторон
-  bots.forEach((b) => {
-    if (b !== bot) {
-      const dx = b.place.x - bot.place.x
-      const dy = b.place.y - bot.place.y
-      const d = Math.max(Math.sqrt(dx * dx + dy * dy))      
-    }
-  })
-  return freeSpace
-}*/
+import { proccessDna } from './proccess-dna'
 
 export default function applyEngine(bots: Bots) {
   // Gravity
@@ -32,7 +17,8 @@ export default function applyEngine(bots: Bots) {
 
     atom1.loopCalculated = {
       neighbours: 0,
-      emptySpace: 0,
+      emptySpace: 1,
+      connectedBots: [],
     }
 
     for (let i = 0; i <= 1; i++) {
@@ -45,6 +31,7 @@ export default function applyEngine(bots: Bots) {
             // На первом круге вычислем соседей клетки, свободное место
             if (d <= BOT_RADIUS * 2) {
               atom1.loopCalculated!.neighbours++
+              atom1.loopCalculated!.connectedBots.push(atom2)
             }
           } else {
             // втором вычисляем новые ускорения по днк

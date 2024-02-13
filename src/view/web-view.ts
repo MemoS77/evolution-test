@@ -55,7 +55,11 @@ export default class WebView {
           2 * Math.PI,
           false,
         )
-        let alpha = Math.floor((255 * bot.energy) / MAX_ENERGY).toString(16)
+        let n = bot.energy / MAX_ENERGY
+        if (n > 1) n = 1
+        if (n < 0) n = 0
+
+        let alpha = Math.floor(255 * n).toString(16)
 
         if (alpha.length === 1) {
           alpha = '0' + alpha

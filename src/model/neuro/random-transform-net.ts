@@ -1,6 +1,7 @@
 import { NeuralNetwork } from 'brain.js'
+import { DNA } from '../../types'
 
-export default function randomTransformNet() {
+export default function randomTransformNet(): DNA {
   const config = {
     binaryThresh: 0.5,
     hiddenLayers: [
@@ -41,6 +42,3 @@ export default function randomTransformNet() {
   net.train(trainData)
   return net
 }
-
-const output = randomTransformNet().run([1, 1, 0, 1, 0, 0, 0, 0]) // [0.987]
-console.log(output)

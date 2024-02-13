@@ -25,10 +25,12 @@ export type Bot = {
   clan: string
   devideCounter: number
   dna: Array<DNA>
+  transformDna: DNA
   // Данные вычислемые в каждом цикле. Для оптимизации вычислений, храним в боте.
   loopCalculated?: {
     neighbours: number
     emptySpace: number // на основе neighbours
+    connectedBots: Bot[]
   }
 }
 
