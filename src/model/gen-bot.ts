@@ -4,6 +4,7 @@ import { BOT_RADIUS, MAX_ENERGY } from './const'
 import randomNet from './neuro/random-net'
 import randomTransformNet from './neuro/random-transform-net'
 import randomPlace from './random-place'
+import { copyDna, mutate } from './neuro/mutation'
 
 let maxId = 0
 
@@ -33,8 +34,6 @@ export function createRandomBot(fieldSize: Point): Bot {
     devideCounter: 1,
   }
 }
-
-const copyDna = (net: DNA) => new NeuralNetwork().fromJSON(net.toJSON())
 
 export function devideBot(parentBot: Bot): Bot {
   parentBot.energy = parentBot.energy / 2

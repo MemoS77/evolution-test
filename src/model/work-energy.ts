@@ -77,27 +77,31 @@ export default function workEnergy(bots: Bots) {
 
   // Семечки
   bots.forEach((bot) => {
-    if (bot.kind === BotKind.Main) {
-      bot.loopCalculated!.connectedBots.forEach((b) => {
-        if (b.kind === BotKind.Main && b.clan !== bot.clan) {
-          glueBots(bot, b, bots)
-          return
-        } else if (b.kind === BotKind.Red && b.clan !== bot.clan) {
-          b.energy += TRANSFER_ENERGY
-          bot.energy -= TRANSFER_ENERGY
+    if (bot) {
+      if (bot.kind === BotKind.Main) {
+        bot.loopCalculated!.connectedBots.forEach((b) => {
+          if (b) {
+            if (b.kind === BotKind.Main && b.clan !== bot.clan) {
+              glueBots(bot, b, bots)
+              return
+            } else if (b.kind === BotKind.Red && b.clan !== bot.clan) {
+              b.energy += TRANSFER_ENERGY
+              bot.energy -= TRANSFER_ENERGY
+            }
+          }
+        })
+        if (bot.energy >= STEM_DEVIDE_ENERGY) {
+          const newBot = devideBot(bot)
+          const r = proccessTransformDna(bot)
+          if (r !== BotKind.Main) {
+            newBot.kind = r
+            console.log('Transform!', r)
+          } else console.log('Devide')
+          bots.add(newBot)
         }
-      })
-      if (bot.energy >= STEM_DEVIDE_ENERGY) {
-        const newBot = devideBot(bot)
-        const r = proccessTransformDna(bot)
-        if (r !== BotKind.Main) {
-          newBot.kind = r
-          console.log('Transform!', r)
-        } else console.log('Devide')
-        bots.add(newBot)
-      }
-      if (bot.loopCalculated!.neighbours > 0) {
-        bot.energy -= LOOP_ENERGY
+        if (bot.loopCalculated!.neighbours > 0) {
+          bot.energy -= LOOP_ENERGY
+        }
       }
     }
   })
